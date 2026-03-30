@@ -10,8 +10,8 @@
 #   6. Starts the node
 #
 # Usage:
-#   ./start.sh                       # Auto-detect everything, devnet
-#   ./start.sh --auto-stake          # Auto-stake tokens when balance >= 100
+#   ./start.sh                       # Auto-detect everything, devnet (auto-stake ON)
+#   ./start.sh --no-auto-stake       # Disable auto-staking
 #   SOLANA_RPC_URL=<rpc> ./start.sh  # Use a custom RPC (e.g., mainnet)
 #
 set -euo pipefail
@@ -22,12 +22,12 @@ TOKENS_DIR="$SCRIPT_DIR/tokens"
 CONFIG_FILE="$SCRIPT_DIR/node-config.json"
 
 # Parse arguments
-AUTO_STAKE=0
+AUTO_STAKE=1
 NODE_ARGS=""
 for arg in "$@"; do
   case "$arg" in
-    --auto-stake) AUTO_STAKE=1 ;;
-    *)            NODE_ARGS="$NODE_ARGS $arg" ;;
+    --no-auto-stake) AUTO_STAKE=0 ;;
+    *)               NODE_ARGS="$NODE_ARGS $arg" ;;
   esac
 done
 
@@ -197,10 +197,12 @@ info "Created ${WHITE}models/${CYAN} and ${WHITE}data/${NC}"
 step "Launching node..."
 if [ "$AUTO_STAKE" -eq 1 ]; then
   info "Auto-stake ${GREEN}enabled${CYAN} (stake when balance >= 100 tokens)"
+else
+  info "Auto-stake ${YELLOW}disabled${CYAN} (use default to enable)"
 fi
 echo ""
-if [ "$AUTO_STAKE" -eq 1 ]; then
-  exec node src/main.js --config "$CONFIG_FILE" --auto-stake$NODE_ARGS
+if [ "$AUTO_STAKE" -eq 0 ]; then
+  exec node src/main.js --config "$CONFIG_FILE" --no-auto-stake$NODE_ARGS
 else
   exec node src/main.js --config "$CONFIG_FILE"$NODE_ARGS
 fi
