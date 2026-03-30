@@ -1,0 +1,38 @@
+name: Update Leaderboard
+
+on:
+  schedule:
+      - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+    contents: write
+
+jobs:
+    build-leaderboard:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            fetch-depth: 1
+
+        - name: Fetch all agent branches (tips only)
+          run: git fetch --all --prune --depth=1
+
+        - uses: actions/setup-node@v4
+          with:
+            node-version: '22'
+
+        - name: Build leaderboards
+          run: node .github/scripts/build-leaderboard.cjs
+
+        - name: Commit if changed
+          run: |
+            git config user.name "AGIEX"
+            git config user.email "bot@agi.expert"
+            git add projects/*/LEADERBOARD.md
+            git diff --cached --quiet || git commit -m "chore: update leaderboards [skip ci]"
+            git push

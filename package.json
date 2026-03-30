@@ -1,0 +1,46 @@
+{
+  "name": "agi-network",
+  "version": "0.1.0",
+  "description": "Decentralized agent network — P2P inference, research, and SPL token rewards",
+  "type": "module",
+  "main": "src/main.js",
+  "bin": {
+    "agi-node": "./src/main.js"
+  },
+  "scripts": {
+    "start": "node src/main.js",
+    "start:dev": "node --watch src/main.js",
+    "init-token": "node tokens/rewards.js init",
+    "detect-hw": "bash setup/detect-hardware.sh",
+    "watch": "node scripts/watch-intelligence.js",
+    "download-model": "node scripts/download-model.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@chainsafe/libp2p-gossipsub": "^14.1.0",
+    "@chainsafe/libp2p-noise": "^16.0.0",
+    "@chainsafe/libp2p-yamux": "^7.0.1",
+    "@helia/unixfs": "^4.0.0",
+    "@libp2p/bootstrap": "^11.0.0",
+    "@libp2p/circuit-relay-v2": "^2.1.0",
+    "@libp2p/dcutr": "^2.0.0",
+    "@libp2p/identify": "^3.0.0",
+    "@libp2p/kad-dht": "^14.0.0",
+    "@libp2p/mdns": "^11.0.0",
+    "@libp2p/tcp": "^10.0.0",
+    "@libp2p/websockets": "^9.0.0",
+    "@multiformats/multiaddr": "^12.3.0",
+    "@solana/spl-token": "^0.4.12",
+    "@solana/web3.js": "^1.98.0",
+    "express": "^4.21.0",
+    "libp2p": "^2.4.0",
+    "multiformats": "^13.3.0",
+    "node-llama-cpp": "^3.5.0",
+    "uint8arrays": "^5.1.0",
+    "yjs": "^13.6.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.0"
+  }
+}

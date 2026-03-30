@@ -1,0 +1,15 @@
+{
+  "name": "@agi-network/spl-rewards",
+  "version": "0.1.0",
+  "description": "SPL token rewards for the decentralized agent network — replaces the proprietary points system",
+  "type": "module",
+  "main": "rewards.js",
+  "scripts": {
+    "init-token": "node rewards.js init",
+    "mint-test": "node rewards.js mint --amount 100 --recipient test"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.98.0",
+    "@solana/spl-token": "^0.4.12"
+  }
+}

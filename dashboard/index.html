@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AGI.expert — Live Intelligence Dashboard</title>
+<style>
+  :root {
+    --bg: #0a0e17;
+    --surface: #111827;
+    --border: #1e293b;
+    --text: #e2e8f0;
+    --dim: #64748b;
+    --cyan: #22d3ee;
+    --green: #34d399;
+    --magenta: #c084fc;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --orange: #fb923c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #111827 0%, var(--bg) 100%);
+  }
+  .header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: -0.5px;
+  }
+  .header h1 span { color: var(--dim); font-weight: 400; }
+  .header-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+    color: var(--dim);
+  }
+  .header-meta .live {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse-dot 2s infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+  }
+
+  /* ── Grid layout ── */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin-top: 1px;
+  }
+  @media (max-width: 1200px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    padding: 16px 20px;
+    min-height: 180px;
+  }
+  .card-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--dim);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .icon { font-size: 14px; }
+
+  /* ── Stats row ── */
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    flex: 1;
+    min-width: 100px;
+    background: var(--bg);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--dim);
+    letter-spacing: 1px;
+  }
+  .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .stat-value.cyan { color: var(--cyan); }
+  .stat-value.green { color: var(--green); }
+  .stat-value.magenta { color: var(--magenta); }
+  .stat-value.yellow { color: var(--yellow); }
+  .stat-value.blue { color: var(--blue); }
+
+  /* ── Leaderboard table ── */
+  .lb-table {
+    width: 100%;
+    font-size: 12px;
+    border-collapse: collapse;
+  }
+  .lb-table th {
+    text-align: left;
+    color: var(--dim);
+    font-weight: 500;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .lb-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #0f172a;
+  }
+  .lb-table tr:first-child td { color: var(--green); font-weight: 600; }
+  .lb-table .rank { color: var(--dim); width: 30px; }
+  .lb-table .peer { color: var(--cyan); }
+  .lb-table .metric { font-weight: 600; text-align: right; }
+  .lb-table .time { color: var(--dim); text-align: right; font-size: 10px; }
+
+  /* ── Live log ── */
+  .log-panel {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    padding: 16px 20px;
+    max-height: 320px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .log-entries {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  .log-entry {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    animation: slide-in 0.3s ease-out;
+  }
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .log-ts { color: var(--dim); margin-right: 8px; }
+  .log-tag { font-weight: 600; margin-right: 6px; }
+  .log-tag.research { color: var(--green); }
+  .log-tag.brain { color: var(--magenta); }
+  .log-tag.pulse { color: var(--magenta); }
+  .log-tag.p2p { color: var(--yellow); }
+  .log-tag.best { color: var(--yellow); }
+
+  /* ── Progress bars ── */
+  .domain-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+  .domain-label {
+    width: 80px;
+    text-align: right;
+    color: var(--dim);
+    flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--bg);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+  .bar-value {
+    width: 60px;
+    text-align: right;
+    font-weight: 600;
+    font-size: 11px;
+  }
+
+  /* ── Network graph ── */
+  .network-viz {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 8px 0;
+  }
+  .node-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    border: 2px solid;
+    transition: all 0.3s ease;
+  }
+  .node-dot.self {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    box-shadow: 0 0 12px rgba(34, 211, 238, 0.3);
+  }
+  .node-dot.peer {
+    border-color: var(--dim);
+    color: var(--dim);
+  }
+  .node-dot.active {
+    border-color: var(--green);
+    color: var(--green);
+    animation: pulse-dot 2s infinite;
+  }
+
+  /* ── Inspiration flow ── */
+  .flow-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 11px;
+    color: var(--dim);
+  }
+  .flow-arrow { color: var(--cyan); }
+  .flow-project { color: var(--green); }
+  .flow-value { color: var(--yellow); font-weight: 600; }
+
+  /* ── Footer ── */
+  .footer {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    padding: 12px 20px;
+    font-size: 10px;
+    color: var(--dim);
+    text-align: center;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>AGI<span>.expert</span> — Intelligence Dashboard</h1>
+  <div class="header-meta">
+    <div class="live"><div class="live-dot"></div> LIVE</div>
+    <div id="uptime">--:--:--</div>
+    <div id="peerId">Connecting...</div>
+  </div>
+</div>
+
+<div class="grid">
+
+  <!-- Overview stats -->
+  <div class="card" style="grid-column: 1 / -1;">
+    <div class="card-title">Overview</div>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-label">Experiments</div>
+        <div class="stat-value cyan" id="totalExperiments">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Gossip Sent</div>
+        <div class="stat-value green" id="gossipSent">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Gossip Recv</div>
+        <div class="stat-value green" id="gossipRecv">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Peers</div>
+        <div class="stat-value yellow" id="peerCount">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Capabilities</div>
+        <div class="stat-value magenta" id="capabilities">-</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Current Project</div>
+        <div class="stat-value blue" id="currentProject">-</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Domain progress bars -->
+  <div class="card" style="grid-column: 1 / 2;">
+    <div class="card-title">Domain Best Scores</div>
+    <div id="domainBars"></div>
+  </div>
+
+  <!-- Network topology -->
+  <div class="card">
+    <div class="card-title">Network Topology</div>
+    <div class="network-viz" id="networkViz">
+      <div class="node-dot self">ME</div>
+    </div>
+  </div>
+
+  <!-- Capabilities -->
+  <div class="card">
+    <div class="card-title">Active Capabilities</div>
+    <div id="capsList" style="font-size: 12px; line-height: 2;"></div>
+  </div>
+
+  <!-- Leaderboards -->
+  <div class="card">
+    <div class="card-title">Research Leaderboard (val_loss)</div>
+    <table class="lb-table" id="lb-research"><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <div class="card-title">Search Leaderboard (ndcg@10)</div>
+    <table class="lb-table" id="lb-search"><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <div class="card-title">Finance Leaderboard (sharpe)</div>
+    <table class="lb-table" id="lb-finance"><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <div class="card-title">Coding Leaderboard (composite)</div>
+    <table class="lb-table" id="lb-coding"><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <div class="card-title">Skills Leaderboard (score)</div>
+    <table class="lb-table" id="lb-skills"><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <div class="card-title">Causes Leaderboard (score)</div>
+    <table class="lb-table" id="lb-causes"><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <div class="card-title">AGI Leaderboard (composite)</div>
+    <table class="lb-table" id="lb-agi"><tbody></tbody></table>
+  </div>
+
+  <!-- Live log -->
+  <div class="card log-panel">
+    <div class="card-title">Live Activity</div>
+    <div class="log-entries" id="logEntries"></div>
+  </div>
+
+  <div class="footer">
+    AGI.expert Decentralized Intelligence Network — CRDT-synced leaderboards across all nodes — Data refreshes every 3s via SSE
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+// Domain display configs
+const DOMAIN_CONFIG = {
+  research: { label: 'ML Research', color: '#22d3ee', max: 5, direction: 'asc', format: v => v.toFixed(4) },
+  search:   { label: 'Search',      color: '#34d399', max: 1, direction: 'desc', format: v => v.toFixed(4) },
+  finance:  { label: 'Finance',     color: '#fbbf24', max: 2, direction: 'desc', format: v => v.toFixed(3) },
+  coding:   { label: 'Coding',      color: '#c084fc', max: 1, direction: 'desc', format: v => v.toFixed(4) },
+  skills:   { label: 'Skills',      color: '#60a5fa', max: 1, direction: 'desc', format: v => v.toFixed(4) },
+  causes:   { label: 'Causes',      color: '#fb923c', max: 1, direction: 'desc', format: v => v.toFixed(4) },
+  agi:      { label: 'AGI',         color: '#f472b6', max: 1, direction: 'desc', format: v => v.toFixed(4) },
+};
+
+const FIELD_MAP = {
+  research: 'valLoss',
+  search: 'ndcg10',
+  finance: 'sharpeRatio',
+  coding: 'compositeScore',
+  skills: 'score',
+  causes: 'bestResult',
+  agi: 'compositeScore',
+};
+
+let prevExperiments = 0;
+let logLines = [];
+
+function formatUptime(sec) {
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function timeAgo(ts) {
+  if (!ts) return '-';
+  const sec = Math.floor((Date.now() - ts) / 1000);
+  if (sec < 60) return `${sec}s ago`;
+  if (sec < 3600) return `${Math.floor(sec/60)}m ago`;
+  return `${Math.floor(sec/3600)}h ago`;
+}
+
+function renderLeaderboard(domainId, entries) {
+  const table = $(`lb-${domainId}`);
+  if (!table) return;
+  const field = FIELD_MAP[domainId] || 'score';
+  const tbody = table.querySelector('tbody') || table;
+  tbody.innerHTML = entries.length === 0
+    ? '<tr><td colspan="4" style="color:var(--dim);text-align:center;padding:20px;">No entries yet</td></tr>'
+    : entries.slice(0, 8).map((e, i) => `
+      <tr>
+        <td class="rank">#${i+1}</td>
+        <td class="peer">${(e.peerId || '').slice(0, 16)}...</td>
+        <td class="metric">${typeof e[field] === 'number' ? e[field].toFixed(4) : (e.score || 0).toFixed(4)}</td>
+        <td class="time">${timeAgo(e.timestamp)}</td>
+      </tr>`).join('');
+}
+
+function renderDomainBars(snapshot) {
+  const container = $('domainBars');
+  if (!container) return;
+  let html = '';
+  for (const [domain, cfg] of Object.entries(DOMAIN_CONFIG)) {
+    const lb = snapshot.leaderboards?.[domain];
+    const best = lb?.globalBest;
+    const field = FIELD_MAP[domain];
+    const value = best ? (best[field] ?? best.score ?? 0) : 0;
+    const pct = cfg.direction === 'asc'
+      ? Math.max(0, 100 - (value / cfg.max) * 100)
+      : Math.min(100, (value / cfg.max) * 100);
+    html += `
+      <div class="domain-bar">
+        <div class="domain-label">${cfg.label}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${pct}%;background:${cfg.color};"></div>
+        </div>
+        <div class="bar-value" style="color:${cfg.color}">${value ? cfg.format(value) : '-'}</div>
+      </div>`;
+  }
+  container.innerHTML = html;
+}
+
+function renderNetwork(peerCount, myPeerId) {
+  const viz = $('networkViz');
+  if (!viz) return;
+  let html = `<div class="node-dot self" title="${myPeerId}">ME</div>`;
+  for (let i = 0; i < peerCount; i++) {
+    html += `<div class="node-dot peer active">P${i+1}</div>`;
+  }
+  if (peerCount === 0) {
+    html += `<div style="color:var(--dim);font-size:11px;margin-left:8px;">Solo mode — no peers connected</div>`;
+  }
+  viz.innerHTML = html;
+}
+
+function addLog(tag, message, cls) {
+  const now = new Date();
+  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+  logLines.push({ ts, tag, message, cls });
+  if (logLines.length > 100) logLines = logLines.slice(-100);
+
+  const container = $('logEntries');
+  if (!container) return;
+  container.innerHTML = logLines.map(l =>
+    `<div class="log-entry"><span class="log-ts">${l.ts}</span><span class="log-tag ${l.cls}">[${l.tag}]</span> ${l.message}</div>`
+  ).join('');
+  container.scrollTop = container.scrollHeight;
+}
+
+function update(data) {
+  const status = data.status;
+  const snap = data.snapshot;
+
+  // Header
+  $('peerId').textContent = (status.peerId || '').slice(0, 20) + '...';
+  $('uptime').textContent = formatUptime(status.uptime_seconds || 0);
+
+  // Stats
+  $('totalExperiments').textContent = status.stats?.totalExperiments || 0;
+  $('gossipSent').textContent = status.stats?.totalGossipSent || 0;
+  $('gossipRecv').textContent = status.stats?.totalGossipReceived || 0;
+  $('peerCount').textContent = data.peers || 0;
+  $('capabilities').textContent = (status.capabilities || []).length + '/9';
+  $('currentProject').textContent = status.stats?.currentProject || '-';
+
+  // Capabilities list
+  const caps = status.capabilities || [];
+  $('capsList').innerHTML = caps.map(c =>
+    `<div style="display:inline-block;background:var(--bg);padding:3px 10px;border-radius:4px;margin:2px;font-size:11px;color:var(--green);">${c}</div>`
+  ).join('') || '<span style="color:var(--dim)">None detected</span>';
+
+  // Domain bars
+  renderDomainBars(snap);
+
+  // Network
+  renderNetwork(data.peers, status.peerId);
+
+  // Leaderboards
+  for (const domain of Object.keys(DOMAIN_CONFIG)) {
+    const entries = snap.leaderboards?.[domain]?.top10 || [];
+    renderLeaderboard(domain, entries);
+  }
+
+  // Log new experiments
+  const newExperiments = (status.stats?.totalExperiments || 0) - prevExperiments;
+  if (newExperiments > 0 && prevExperiments > 0) {
+    const project = status.stats?.currentProject || 'unknown';
+    addLog('brain', `${project} — experiment completed (total: ${status.stats.totalExperiments})`, 'brain');
+
+    // Check for new bests
+    for (const [proj, info] of Object.entries(status.bestResults || {})) {
+      addLog('best', `${proj} — run #${info.runNumber} best: ${JSON.stringify(info.bestMetric).slice(0, 60)}`, 'best');
+    }
+  }
+  prevExperiments = status.stats?.totalExperiments || 0;
+
+  if (data.peers > 0) {
+    addLog('p2p', `${data.peers} peers connected, gossip: ${status.stats?.totalGossipSent}/${status.stats?.totalGossipReceived}`, 'p2p');
+  }
+}
+
+// SSE connection
+function connect() {
+  const baseUrl = window.location.origin;
+  const es = new EventSource(`${baseUrl}/dashboard/events`);
+
+  es.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      update(data);
+    } catch {}
+  };
+
+  es.onerror = () => {
+    addLog('dash', 'Connection lost — reconnecting...', 'pulse');
+    es.close();
+    setTimeout(connect, 3000);
+  };
+
+  addLog('dash', 'Connected to node SSE stream', 'research');
+}
+
+connect();
+</script>
+</body>
+</html>

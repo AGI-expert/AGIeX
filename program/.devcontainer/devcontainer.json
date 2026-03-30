@@ -1,0 +1,37 @@
+{
+  "name": "AGI Rewards — Anchor/Solana",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "remoteUser": "vscode",
+  "features": {},
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "rust-analyzer.check.command": "clippy",
+        "rust-analyzer.cargo.features": "all",
+        "editor.formatOnSave": true,
+        "[rust]": {
+          "editor.defaultFormatter": "rust-lang.rust-analyzer"
+        },
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "serayuzgur.crates",
+        "tamasfe.even-better-toml",
+        "vadimcn.vscode-lldb",
+        "usernamehw.errorlens"
+      ]
+    }
+  },
+  "postCreateCommand": "solana --version && anchor --version && rustc --version",
+  "forwardPorts": [8899, 8900],
+  "portsAttributes": {
+    "8899": { "label": "Solana RPC" },
+    "8900": { "label": "Solana WebSocket" }
+  }
+}

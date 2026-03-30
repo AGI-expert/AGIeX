@@ -1,0 +1,57 @@
+version: 1
+# Agentic Coding — Fine-tune Qwen 3.5 for higher coding + ML script benchmarks
+model:
+  base: qwen3.5-coder-7b
+  quantization: q4_k_m
+  contextLength: 8192
+  vocabSize: 151936
+architecture:
+  nLayers: 32
+  nHeads: 32
+  dModel: 4096
+  dFF: 11008
+  activation: silu
+  normalization: rmsnorm
+  positionEncoding: rotary
+  tieEmbeddings: false
+  residualScale: 1.0
+  dropoutRate: 0.0
+finetuning:
+  method: lora
+  loraRank: 64
+  loraAlpha: 128
+  loraDropout: 0.05
+  targetModules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  learningRate: 0.0002
+  weightDecay: 0.01
+  warmupRatio: 0.03
+  schedulerType: cosine
+  gradientClipNorm: 1.0
+  gradientAccumulation: 4
+training:
+  batchSize: 4
+  epochs: 3
+  maxSteps: 5000
+  maxDurationSec: 3600
+  evalInterval: 250
+  evalSteps: 50
+  fp16: true
+data:
+  dataset: agentic-coding-mix
+  splits:
+    train: [code-alpaca, evol-instruct-code, self-oss-instruct, ml-scripts-curated]
+    eval: [humaneval, mbpp, ml-bench]
+  tokenizer: qwen
+  maxSeqLength: 4096
+  packSequences: true
+benchmarks:
+  primary: humaneval_plus
+  secondary: [mbpp_plus, ml_bench, ds1000, classeval]
+  codingWeight: 0.6
+  mlScriptWeight: 0.4
+generation:
+  temperature: 0.2
+  topP: 0.95
+  maxNewTokens: 2048
+  stopSequences: ["```\n\n", "\n\nclass ", "\n\ndef "]
+  repetitionPenalty: 1.05

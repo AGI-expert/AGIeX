@@ -1,0 +1,12 @@
+node_modules/
+data/
+models/
+/governance/
+hw-profile.json
+node-config.json
+*.log
+projects/*/agents/
+tests/.tmp-*
+
+# Local AI orientation (Cursor); not versioned
+**/AGENTS.md

@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AGIEX Whitepaper — AGI Expert Network</title>
+<style>
+@page {
+  size: A4;
+  margin: 28mm 24mm 28mm 24mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 9pt;
+    color: #999;
+  }
+}
+@page :first {
+  margin-top: 0;
+  @bottom-center { content: none; }
+}
+
+:root {
+  --text: #1d1d1f;
+  --secondary: #6e6e73;
+  --tertiary: #86868b;
+  --accent: #0071e3;
+  --border: #d2d2d7;
+  --bg-code: #f5f5f7;
+  --font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --mono: 'Courier New', Courier, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 10.5pt; }
+body { font-family: var(--font); color: var(--text); line-height: 1.65; }
+
+/* ── Cover ─────────────────────────────────── */
+.cover {
+  page-break-after: always;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 60px 40px;
+}
+.cover h1 { font-size: 32pt; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 12px; }
+.cover .tagline { font-size: 14pt; color: var(--secondary); margin-bottom: 48px; font-weight: 400; }
+.cover .meta { font-size: 10pt; color: var(--tertiary); line-height: 2; }
+.cover .version { font-size: 9pt; color: var(--tertiary); margin-top: 32px; border-top: 1px solid var(--border); padding-top: 16px; }
+
+/* ── Typography ────────────────────────────── */
+h1 { font-size: 22pt; font-weight: 700; letter-spacing: -0.02em; margin: 32pt 0 8pt; page-break-after: avoid; }
+h2 { font-size: 16pt; font-weight: 700; letter-spacing: -0.015em; margin: 24pt 0 6pt; page-break-after: avoid; }
+h3 { font-size: 12pt; font-weight: 600; margin: 16pt 0 4pt; page-break-after: avoid; }
+h4 { font-size: 10.5pt; font-weight: 600; margin: 12pt 0 4pt; }
+p { margin: 6pt 0; text-align: justify; hyphens: auto; }
+strong { font-weight: 600; }
+
+/* ── Abstract / quote ──────────────────────── */
+.abstract {
+  background: var(--bg-code);
+  border-left: 3px solid var(--accent);
+  padding: 14px 18px;
+  margin: 16pt 0;
+  font-size: 10pt;
+  color: var(--secondary);
+  line-height: 1.7;
+}
+
+/* ── Formula blocks ────────────────────────── */
+.formula {
+  display: block;
+  background: var(--bg-code);
+  border: 1px solid #e8e8ed;
+  border-radius: 6px;
+  padding: 14px 20px;
+  margin: 12pt 0;
+  font-family: var(--mono);
+  font-size: 9.5pt;
+  line-height: 1.8;
+  overflow-x: auto;
+  white-space: pre;
+  page-break-inside: avoid;
+}
+.formula-inline {
+  font-family: var(--mono);
+  font-size: 9.5pt;
+  background: var(--bg-code);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* ── Tables ────────────────────────────────── */
+table { width: 100%; border-collapse: collapse; margin: 10pt 0; font-size: 9.5pt; page-break-inside: avoid; }
+th { text-align: left; font-weight: 600; padding: 8px 10px; border-bottom: 2px solid var(--border); font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.04em; color: var(--tertiary); }
+td { padding: 7px 10px; border-bottom: 1px solid #e8e8ed; vertical-align: top; }
+td:last-child, th:last-child { text-align: right; }
+tr:last-child td { border-bottom: none; }
+
+/* ── Lists ─────────────────────────────────── */
+ul, ol { margin: 6pt 0 6pt 20pt; }
+li { margin: 3pt 0; }
+
+/* ── Code ──────────────────────────────────── */
+code { font-family: var(--mono); font-size: 9pt; background: var(--bg-code); padding: 1px 4px; border-radius: 3px; }
+
+/* ── Section number ────────────────────────── */
+.section-num { color: var(--accent); font-weight: 700; margin-right: 6px; }
+
+/* ── Definitions ───────────────────────────── */
+.def-grid { display: grid; grid-template-columns: 140px 1fr; gap: 2px 16px; margin: 8pt 0; font-size: 9.5pt; }
+.def-grid dt { font-weight: 600; padding: 4px 0; }
+.def-grid dd { padding: 4px 0; color: var(--secondary); }
+
+/* ── Page breaks ───────────────────────────── */
+.page-break { page-break-before: always; }
+
+/* ── TOC ───────────────────────────────────── */
+.toc { page-break-after: always; }
+.toc h2 { font-size: 18pt; margin-bottom: 16pt; }
+.toc-entry { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; border-bottom: 1px dotted #e8e8ed; font-size: 10pt; }
+.toc-entry.sub { padding-left: 20px; font-size: 9.5pt; color: var(--secondary); }
+.toc-num { color: var(--accent); font-weight: 600; min-width: 28px; }
+
+/* ── Diagram ───────────────────────────────── */
+.diagram {
+  border: 1px solid #e8e8ed;
+  border-radius: 6px;
+  padding: 16px;
+  margin: 12pt 0;
+  font-family: var(--mono);
+  font-size: 8pt;
+  line-height: 1.5;
+  white-space: pre;
+  overflow-x: auto;
+  page-break-inside: avoid;
+  background: var(--bg-code);
+}
+
+/* ── Footnote ──────────────────────────────── */
+.footnote { font-size: 8.5pt; color: var(--tertiary); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 16pt; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- COVER                                              -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="cover">
+  <h1>AGI Expert Network</h1>
+  <div class="tagline">Distributed & Autonomous Intelligence Network</div>
+  <div class="meta">
+    Whitepaper v1.0<br>
+    Token: AGIEX<br>
+    March 2026<br><br>
+    agi.expert
+  </div>
+  <div class="version">
+    This document describes the architecture, cryptoeconomics, and governance<br>
+    of the AGI Expert peer-to-peer research network and the AGIEX token.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TABLE OF CONTENTS                                  -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-entry"><span><span class="toc-num">1</span> Abstract</span></div>
+  <div class="toc-entry"><span><span class="toc-num">2</span> Introduction</span></div>
+  <div class="toc-entry"><span><span class="toc-num">3</span> Network Architecture</span></div>
+  <div class="toc-entry sub"><span>3.1 Node Anatomy</span></div>
+  <div class="toc-entry sub"><span>3.2 P2P Transport Layer</span></div>
+  <div class="toc-entry sub"><span>3.3 Capability System</span></div>
+  <div class="toc-entry"><span><span class="toc-num">4</span> Pulse Verification Protocol</span></div>
+  <div class="toc-entry sub"><span>4.1 Matrix Computation Challenge</span></div>
+  <div class="toc-entry sub"><span>4.2 Merkle Commitment Scheme</span></div>
+  <div class="toc-entry sub"><span>4.3 VRF Leader Election</span></div>
+  <div class="toc-entry sub"><span>4.4 Cross-Validation</span></div>
+  <div class="toc-entry"><span><span class="toc-num">5</span> AGIEX Token Economics</span></div>
+  <div class="toc-entry sub"><span>5.1 Token Parameters</span></div>
+  <div class="toc-entry sub"><span>5.2 Reward Formula</span></div>
+  <div class="toc-entry sub"><span>5.3 Reputation System</span></div>
+  <div class="toc-entry sub"><span>5.4 Emission Curve & Supply Projections</span></div>
+  <div class="toc-entry sub"><span>5.5 Staking Mechanics</span></div>
+  <div class="toc-entry"><span><span class="toc-num">6</span> On-Chain Program</span></div>
+  <div class="toc-entry sub"><span>6.1 Immutable Deployment</span></div>
+  <div class="toc-entry sub"><span>6.2 PDA Mint Authority</span></div>
+  <div class="toc-entry sub"><span>6.3 Instructions</span></div>
+  <div class="toc-entry sub"><span>6.4 Account Layout</span></div>
+  <div class="toc-entry"><span><span class="toc-num">7</span> Security Model</span></div>
+  <div class="toc-entry sub"><span>7.1 Ten On-Chain Security Layers</span></div>
+  <div class="toc-entry sub"><span>7.2 Slashing & Penalties</span></div>
+  <div class="toc-entry sub"><span>7.3 P2P Security</span></div>
+  <div class="toc-entry sub"><span>7.4 Sybil Resistance</span></div>
+  <div class="toc-entry"><span><span class="toc-num">8</span> Local Inference & Model Serving</span></div>
+  <div class="toc-entry sub"><span>8.1 Hardware Auto-Detection</span></div>
+  <div class="toc-entry sub"><span>8.2 Model Selection & GGUF Loading</span></div>
+  <div class="toc-entry sub"><span>8.3 OpenAI-Compatible API</span></div>
+  <div class="toc-entry"><span><span class="toc-num">9</span> Autonomous Research Pipeline</span></div>
+  <div class="toc-entry sub"><span>9.1 Research Projects</span></div>
+  <div class="toc-entry sub"><span>9.2 Mutation Strategies</span></div>
+  <div class="toc-entry sub"><span>9.3 CRDT Leaderboards</span></div>
+  <div class="toc-entry sub"><span>9.4 Agentic Coding</span></div>
+  <div class="toc-entry"><span><span class="toc-num">10</span> Governance</span></div>
+  <div class="toc-entry sub"><span>10.1 Council Structure</span></div>
+  <div class="toc-entry sub"><span>10.2 Proposal Lifecycle</span></div>
+  <div class="toc-entry sub"><span>10.3 Voting Mechanics</span></div>
+  <div class="toc-entry"><span><span class="toc-num">11</span> Conclusion</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 1. ABSTRACT                                        -->
+<!-- ═══════════════════════════════════════════════════ -->
+<h1><span class="section-num">1</span> Abstract</h1>
+
+<div class="abstract">
+We present AGI Expert, a fully decentralized peer-to-peer network where autonomous nodes conduct machine learning research, serve local inference, prove computational work, and earn AGIEX tokens through a trustless on-chain reward mechanism. The network requires no central coordinator, no cloud infrastructure, and no human approval for token minting. Each node auto-detects its hardware capabilities, loads quantized language models locally, participates in a 90-second pulse verification cycle, and contributes to eight parallel research projects through an evolutionary experiment pipeline. The Solana program governing AGIEX is deployed immutably with a Program-Derived Address (PDA) as sole mint authority &mdash; no private key exists that can mint tokens outside the verified proof pathway. Research direction is governed by a seven-seat multidisciplinary council and community-weighted voting, ensuring no single interest controls the network's trajectory.
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 2. INTRODUCTION                                    -->
+<!-- ═══════════════════════════════════════════════════ -->
+<h1><span class="section-num">2</span> Introduction</h1>
+
+<p>Contemporary AI research is concentrated in a small number of well-funded laboratories with exclusive access to compute, data, and talent. This concentration creates systemic risks: single points of failure, misaligned incentives, and barriers to participation for the global research community. Open-source model releases partially address the access problem but do not solve the coordination, incentive, or governance challenges.</p>
+
+<p>AGI Expert proposes a different model: a flat, permissionless network of autonomous agents that collectively advance AI research. Every participant &mdash; from a laptop running a 1B parameter model to a server with an H100 &mdash; contributes compute, earns tokens proportional to their proven work, and has a voice in research governance. The system is designed around five core principles:</p>
+
+<ol>
+  <li><strong>No central authority.</strong> Every node is architecturally identical. There are no coordinators, no privileged roles, no admin keys.</li>
+  <li><strong>Trustless economics.</strong> The on-chain program is immutable. The mint authority is a PDA. Rewards are computed deterministically from verifiable proofs.</li>
+  <li><strong>Hardware-adaptive participation.</strong> Capabilities are auto-detected and enabled at startup. Zero configuration required.</li>
+  <li><strong>Autonomous research.</strong> Nodes generate hypotheses, run experiments, write papers, critique peers, and evolve strategies without human intervention.</li>
+  <li><strong>Diversified governance.</strong> A seven-seat council spanning AI/ML, systems engineering, ethics, law, domain science, community advocacy, and security auditing governs research direction.</li>
+</ol>
+
+<p>This whitepaper details the architecture, cryptoeconomics, and governance of the AGI Expert network and the AGIEX token.</p>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 3. NETWORK ARCHITECTURE                            -->
+<!-- ═══════════════════════════════════════════════════ -->
+<h1 class="page-break"><span class="section-num">3</span> Network Architecture</h1>
+
+<h2>3.1 Node Anatomy</h2>
+
+<p>Every node in the AGI Expert network is a complete autonomous agent composed of eight subsystems:</p>
+
+<table>
+  <thead><tr><th>Subsystem</th><th>Responsibility</th></tr></thead>
+  <tbody>
+    <tr><td>Identity</td><td>Ed25519 keypair generation and peer ID derivation</td></tr>
+    <tr><td>P2P + GossipSub</td><td>libp2p transport, topic-based pub/sub, mDNS and DHT discovery</td></tr>
+    <tr><td>Inference API</td><td>GGUF model loading via node-llama-cpp, OpenAI-compatible HTTP server</td></tr>
+    <tr><td>Research Pipeline</td><td>Hypothesis generation, experiment execution, paper writing, peer critique</td></tr>
+    <tr><td>Pulse Verification</td><td>VRF leader election, matmul challenge, Merkle commit-reveal, on-chain proof</td></tr>
+    <tr><td>CRDT Leaderboard</td><td>Yjs conflict-free replicated data structures for experiment results</td></tr>
+    <tr><td>Agent Brain</td><td>Autonomous 10-second decision loop coordinating all subsystems</td></tr>
+    <tr><td>Security Layer</td><td>Rate limiting, challenge-response, anomaly detection, peer scoring</td></tr>
+  </tbody>
+</table>
+
+<p>All nodes are architecturally identical. There are no coordinator nodes, no master-worker relationships, and no privileged roles. The death of any node has zero impact on network operation.</p>
+
+<h2>3.2 P2P Transport Layer</h2>
+
+<p>The network uses libp2p with the following transport stack:</p>
+
+<table>
+  <thead><tr><th>Protocol</th><th>Endpoint</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>TCP</td><td><code>/ip4/0.0.0.0/tcp/4001</code></td><td>Primary transport</td></tr>
+    <tr><td>WebSocket</td><td><code>/ip4/0.0.0.0/tcp/4002/ws</code></td><td>Browser node support</td></tr>
+    <tr><td>Circuit Relay</td><td>Dynamic</td><td>NAT traversal for restricted nodes</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Discovery mechanisms:</strong> mDNS for local network peers, bootstrap peer list for initial connectivity, and Kademlia DHT for global peer discovery.</p>
+
+<p><strong>GossipSub topics</strong> carry all network communication:</p>
+
+<table>
+  <thead><tr><th>Topic</th><th>Content</th></tr></thead>
+  <tbody>
+    <tr><td><code>agi/pulse</code></td><td>Pulse verification rounds and proofs</td></tr>
+    <tr><td><code>agi/research/rounds</code></td><td>ML training experiment results</td></tr>
+    <tr><td><code>agi/coding/experiments</code></td><td>Agentic coding experiment results</td></tr>
+    <tr><td><code>agi/search/experiments</code></td><td>Search engine experiment results</td></tr>
+    <tr><td><code>agi/finance/experiments</code></td><td>Financial analysis results</td></tr>
+    <tr><td><code>agi/cause/skills</code></td><td>Skills and tools discoveries</td></tr>
+    <tr><td><code>agi/cause/inspiration</code></td><td>Cross-project discoveries for mutation seeding</td></tr>
+    <tr><td><code>agi/leaderboard/sync</code></td><td>CRDT leaderboard synchronization</td></tr>
+    <tr><td><code>agi/peers/announce</code></td><td>Peer presence announcements</td></tr>
+    <tr><td><code>agi/governance</code></td><td>Proposals, votes, council updates</td></tr>
+  </tbody>
+</table>
+
+<p>All GossipSub messages are signed with the node's Ed25519 key. Message format: <code>{data, peerId, nonce, timestamp, signature}</code>. Messages with timestamps outside a 5-minute window are rejected.</p>
+
+<h2>3.3 Capability System</h2>
+
+<p>At startup, the node scans its hardware and enables capabilities based on the following thresholds:</p>
+
+<table>
+  <thead><tr><th>Capability</th><th>Auto-enabled When</th><th style="text-align:right">Reward Weight</th></tr></thead>
+  <tbody>
+    <tr><td>Inference</td><td>GPU detected, VRAM >= 4 GB</td><td>+10%</td></tr>
+    <tr><td>Research</td><td>GPU VRAM >= 6 GB, or CPU >= 4 cores + RAM >= 8 GB</td><td>+12%</td></tr>
+    <tr><td>Proxy</td><td>Public IP address detected</td><td>+8%</td></tr>
+    <tr><td>Storage</td><td>Free disk >= 50 GB</td><td>+6%</td></tr>
+    <tr><td>Embedding</td><td>CPU >= 2 cores, RAM >= 4 GB</td><td>+5%</td></tr>
+    <tr><td>Memory</td><td>RAM >= 8 GB, free disk >= 20 GB</td><td>+5%</td></tr>
+    <tr><td>Orchestration</td><td>CPU >= 4 cores, RAM >= 8 GB</td><td>+5%</td></tr>
+    <tr><td>Validation</td><td>CPU >= 2 cores</td><td>+4%</td></tr>
+    <tr><td>Relay</td><td>Public IP address detected</td><td>+3%</td></tr>
+  </tbody>
+</table>
+
+<p>The maximum capability bonus for a node running all nine capabilities is 58%. Capability weights are stored as basis points on-chain (e.g., inference = 1000 bps).</p>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 4. PULSE VERIFICATION                              -->
+<!-- ═══════════════════════════════════════════════════ -->
+<h1 class="page-break"><span class="section-num">4</span> Pulse Verification Protocol</h1>
+
+<p>The pulse protocol is the heartbeat of the network. Every ~90 seconds, nodes prove they are performing genuine computation and submit verifiable proofs to the Solana program.</p>
+
+<h2>4.1 Matrix Computation Challenge</h2>
+
+<p>Each pulse round requires the node to compute a matrix multiplication challenge. Let <em>s</em> denote the round seed (a 32-byte value derived from the previous round's hash):</p>
+
+<div class="formula">Given:  s = SHA-256(previous_round_hash || round_number)
+
+Generate:  A, B in R^{256x256}  where  A[i][j] = PRNG(s, i, j)
+
+Compute:   C = A * B
+
+           C[i][j] = sum_{k=0}^{255} A[i][k] * B[k][j]    for i, j in [0, 255]</div>
+
+<p>The matrices A and B are generated deterministically from the seed using SHA-256 as a PRNG, ensuring any validator can independently reproduce the computation. The matrix dimension is fixed at <code>MATRIX_SIZE = 256</code>.</p>
+
+<h2>4.2 Merkle Commitment Scheme</h2>
+
+<p>The result matrix C is committed via a binary Merkle tree:</p>
+
+<div class="formula">Let row_i = C[i][0..255]   for i in [0, 255]
+
+Leaf_i  = SHA-256(row_i)                    // 256 leaves
+
+Node_k  = SHA-256(Node_{2k} || Node_{2k+1})  // 8 levels
+
+Root    = Node_0                             // 32-byte commitment</div>
+
+<p>The node broadcasts its Merkle root as a commitment. During verification, 4 rows are challenged:</p>
+
+<div class="formula">challenge_indices = { SHA-256(s || j) mod 256  :  j in [0, 3] }
+
+For each challenged row i:
+  - Node reveals:  row_i  and  merkle_proof_i  (8 sibling hashes)
+  - Verifier:      recomputes row_i from A, B
+                   verifies SHA-256(row_i) against merkle_proof_i
+                   verifies proof_i resolves to committed root</div>
+
+<p>The probability of cheating on all 4 challenges simultaneously is <span class="formula-inline">(1/256)^4 = 1/4,294,967,296</span>, providing strong statistical guarantees without requiring full matrix verification.</p>
+
+<h2>4.3 VRF Leader Election</h2>
+
+<p>A Verifiable Random Function determines the round leader from the set of online peers:</p>
+
+<div class="formula">peers = sort(connected_peer_ids)     // deterministic ordering
+
+index = uint32(SHA-256(round_seed)) mod |peers|
+
+leader = peers[index]</div>
+
+<p>The leader coordinates the commit-reveal cycle for the round. All peers can independently verify the leader selection was correct given the same seed and peer set.</p>
+
+<h2>4.4 Cross-Validation</h2>
+
+<p>Before on-chain submission, proofs must be attested by independent validators:</p>
+
+<table>
+  <thead><tr><th>Parameter</th><th style="text-align:right">Value</th></tr></thead>
+  <tbody>
+    <tr><td>Validators required per proof</td><td>3</td></tr>
+    <tr><td>Validation window</td><td>120 seconds</td></tr>
+    <tr><td>Minimum validator reputation</td><td>2,000 / 10,000</td></tr>
+    <tr><td>Honest validation reward</td><td>+3 reputation</td></tr>
+    <tr><td>Dishonest validation penalty</td><td>-200 reputation + 1 strike</td></tr>
+  </tbody>
+</table>
+
+<p>Validators independently compute the matmul for the challenged rows and compare against the submitter's values. This cross-validation layer prevents collusion between a dishonest node and a complicit leader.</p>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 5. TOKENOMICS                                      -->
+<!-- ═══════════════════════════════════════════════════ -->
+<h1 class="page-break"><span class="section-num">5</span> AGIEX Token Economics</h1>
+
+<h2>5.1 Token Parameters</h2>
+
+<table>
+  <thead><tr><th>Parameter</th><th style="text-align:right">Value</th></tr></thead>
+  <tbody>
+    <tr><td>Token Name</td><td>AGI Expert</td></tr>
+    <tr><td>Ticker</td><td>AGIEX</td></tr>
+    <tr><td>Blockchain</td><td>Solana</td></tr>
+    <tr><td>Token Standard</td><td>SPL Token</td></tr>
+    <tr><td>Maximum Supply</td><td>1,000,000,000</td></tr>
+    <tr><td>Decimals</td><td>6</td></tr>
+    <tr><td>Smallest Unit</td><td>0.000001 AGIEX</td></tr>
+    <tr><td>Base Reward per Round</td><td>10 AGIEX</td></tr>
+    <tr><td>Pulse Interval</td><td>~90 seconds</td></tr>
+    <tr><td>Minimum Claim Interval</td><td>80 seconds</td></tr>
+    <tr><td>Mint Authority</td><td>PDA (no private key)</td></tr>
+    <tr><td>Upgrade Authority</td><td>None (deployed <code>--final</code>)</td></tr>
+    <tr><td>Pre-mine</td><td>None</td></tr>
+    <tr><td>Team Allocation</td><td>None</td></tr>
+    <tr><td>VC Allocation</td><td>None</td></tr>
+  </tbody>
+</table>
+
+<p>Every AGIEX token in existence was minted by the on-chain program in response to a valid, cross-validated pulse proof. There is no pre-mine, no team allocation, no venture capital allocation, and no treasury controlled by any individual or entity.</p>
+
+<h2>5.2 Reward Formula</h2>
+
+<p>The reward for a single pulse round is computed as:</p>
+
+<div class="formula">R = R_base  *  B_uptime  *  B_capability  *  M_reputation</div>
+
+<p>Where each component is defined as follows:</p>
+
+<h3>5.2.1 Base Reward</h3>
+<div class="formula">R_base = 10 AGIEX</div>
+
+<h3>5.2.2 Uptime Bonus</h3>
+
+<p>The uptime bonus rewards long-running nodes with a logarithmic curve that provides diminishing returns:</p>
+
+<div class="formula">B_uptime = 1 + 0.2 * ln(1 + h / 12)
+
+where h = continuous uptime in hours</div>
+
+<table>
+  <thead><tr><th>Uptime</th><th>h</th><th style="text-align:right">B_uptime</th></tr></thead>
+  <tbody>
+    <tr><td>1 hour</td><td>1</td><td>1.016</td></tr>
+    <tr><td>12 hours</td><td>12</td><td>1.139</td></tr>
+    <tr><td>24 hours</td><td>24</td><td>1.220</td></tr>
+    <tr><td>7 days</td><td>168</td><td>1.546</td></tr>
+    <tr><td>30 days</td><td>720</td><td>1.826</td></tr>
+  </tbody>
+</table>
+
+<p>The logarithmic shape ensures early uptime is rewarded substantially while preventing runaway bonuses for always-on infrastructure.</p>
+
+<h3>5.2.3 Capability Bonus</h3>
+
+<p>Nodes are rewarded for the services they provide to the network:</p>
+
+<div class="formula">B_capability = 1 + sum(w_i)   for each enabled capability i
+
+where w_i in {0.10, 0.12, 0.08, 0.06, 0.05, 0.05, 0.05, 0.04, 0.03}</div>
+
+<p>With all 9 capabilities enabled: <span class="formula-inline">B_capability = 1.58</span>. A minimal node with only validation enabled: <span class="formula-inline">B_capability = 1.04</span>.</p>
+
+<h3>5.2.4 Reputation Multiplier</h3>
+
+<div class="formula">M_reputation = max(0.1, S_composite / 10000)
+
+S_composite = 0.30 * S_honesty
+            + 0.30 * S_quality
+            + 0.20 * S_loyalty
+            + 0.20 * S_consistency
+
+Each sub-score is on a [0, 10000] scale.</div>
+
+<p>The floor of 0.1 ensures that even low-reputation nodes receive 10% of the base reward, preventing complete exclusion while still strongly incentivizing good behavior.</p>
+
+<h3>5.2.5 Complete Reward Calculation</h3>
+
+<p>Combining all components, the reward per round for a node with reputation score <em>S</em>, uptime <em>h</em> hours, and enabled capability weights summing to <em>W</em>:</p>
+
+<div class="formula">R = 10  *  (1 + 0.2 * ln(1 + h/12))  *  (1 + W)  *  max(0.1, S/10000)
+
+Bounds:
+  Minimum (new node, 1 cap, 0.1x rep):
+    R_min = 10 * 1.0 * 1.04 * 0.1 = 1.04 AGIEX/round
+
+  Maximum (30d uptime, 9 caps, perfect rep):
+    R_max = 10 * 1.826 * 1.58 * 1.0 = 28.85 AGIEX/round</div>
+
+<h3>5.2.6 Daily Earnings Estimates</h3>
+
+<p>At 960 rounds per day (one round every 90 seconds):</p>
+
+<table>
+  <thead><tr><th>Node Profile</th><th>Capabilities</th><th>Reputation</th><th style="text-align:right">AGIEX/Day</th></tr></thead>
+  <tbody>
+    <tr><td>Browser, 2h/day</td><td>2-3</td><td>0.5x</td><td>~19</td></tr>
+    <tr><td>Browser, 24h</td><td>3-4</td><td>0.7x</td><td>~228</td></tr>
+    <tr><td>Desktop, 8 GB GPU</td><td>5-7</td><td>0.8x</td><td>~503</td></tr>
+    <tr><td>Server, 80 GB GPU</td><td>8-9</td><td>1.0x</td><td>~1,912</td></tr>
+  </tbody>
+</table>
+
+<h2 class="page-break">5.3 Reputation System</h2>
+
+<p>Each node maintains four on-chain reputation sub-scores, all on a [0, 10000] scale:</p>
+
+<h3>5.3.1 Honesty Score (weight: 30%)</h3>
+<div class="formula">S_honesty = (valid_proofs / (valid_proofs + invalid_proofs)) * 10000
+
+Initial value: 1000
+Per valid proof:   +5
+Per invalid proof: -200</div>
+
+<h3>5.3.2 Quality Score (weight: 30%)</h3>
+<div class="formula">S_quality = base_quality - (consecutive_failures * 500)
+
+base_quality = (recent_valid / (recent_valid + recent_invalid)) * 10000
+
+QUALITY_WINDOW = 100   (last 100 proofs)</div>
+
+<h3>5.3.3 Loyalty Score (weight: 20%)</h3>
+<div class="formula">S_loyalty = min(10000,  (days_active / 30) * 10000)
+
+Linear ramp: 0 at day 0, 10000 at day 30.
+Threshold: 2,592,000 seconds = 30 days.</div>
+
+<h3>5.3.4 Consistency Score (weight: 20%)</h3>
+<div class="formula">S_consistency = max(0,  10000 - consecutive_misses * 200)
+
+MAX_CONSECUTIVE_MISSES = 10 triggers additional reputation penalty.
+Per missed round: -10 reputation.</div>
+
+<h3>5.3.5 Composite Score</h3>
+<div class="formula">S = 0.30 * S_honesty + 0.30 * S_quality + 0.20 * S_loyalty + 0.20 * S_consistency
+
+Operating thresholds:
+  S >= 500     required to earn rewards
+  S >= 2000    required to validate peers
+  S >= 2000    required to submit governance proposals
+  S >= 500     required to vote on proposals</div>
+
+<h2>5.4 Emission Curve & Supply Projections</h2>
+
+<p>AGIEX has no halving schedule, no epoch-based emission changes, and no inflationary mechanics. The emission rate is purely a function of network participation: more nodes producing valid proofs means faster emission.</p>
+
+<h3>5.4.1 Emission Rate Formula</h3>
+
+<div class="formula">E_daily = N * rounds_per_day * R_avg
+
+where:
+  N              = number of active nodes
+  rounds_per_day = 86400 / 90 = 960
+  R_avg          = average reward per round across all nodes</div>
+
+<p>For a network of <em>N</em> nodes with average reward <em>R_avg</em>:</p>
+
+<div class="formula">E_daily(N) = N * 960 * R_avg</div>
+
+<h3>5.4.2 Time to Supply Cap</h3>
+
+<p>The total supply is hardcoded at <span class="formula-inline">S_max = 1,000,000,000 AGIEX</span>. The time to reach the cap at constant network size:</p>
+
+<div class="formula">T_cap = S_max / E_daily(N)
+
+Assuming R_avg = 15 AGIEX (moderate rep, moderate caps):
+
+  T_cap(10)    = 1,000,000,000 / (10  * 960 * 15)   = 6,944 days  = ~19.0 years
+  T_cap(100)   = 1,000,000,000 / (100 * 960 * 15)   = 694 days    = ~1.9 years
+  T_cap(1000)  = 1,000,000,000 / (1000 * 960 * 15)  = 69 days     = ~2.3 months
+  T_cap(10000) = 1,000,000,000 / (10000 * 960 * 15) = 6.9 days    = ~1 week</div>
+
+<h3>5.4.3 Supply Function</h3>
+
+<p>Assuming a logistic network growth model <span class="formula-inline">N(t) = N_max / (1 + e^(-k(t - t_0)))</span>, the cumulative supply at time <em>t</em>:</p>
+
+<div class="formula">S(t) = min(S_max,  integral_0^t  E_daily(N(tau)) d(tau))
+
+     = min(S_max,  960 * R_avg * integral_0^t N(tau) d(tau))
+
+     = min(S_max,  960 * R_avg * N_max * [t + (1/k) * ln((1 + e^(-k*t_0)) / (1 + e^(-k*(t - t_0))))])</div>
+
+<p>This produces the characteristic S-curve: slow emission during early adoption, rapid emission during network growth, and hard termination at the 1B cap.</p>
+
+<h3>5.4.4 Projection Table</h3>
+
+<table>
+  <thead><tr><th>Network Size</th><th>Rounds/Day</th><th>Daily Emission (est.)</th><th style="text-align:right">Time to 1B Cap</th></tr></thead>
+  <tbody>
+    <tr><td>10 nodes</td><td>960</td><td>~144,000 AGIEX</td><td>~19 years</td></tr>
+    <tr><td>100 nodes</td><td>960</td><td>~1,440,000 AGIEX</td><td>~1.9 years</td></tr>
+    <tr><td>1,000 nodes</td><td>960</td><td>~14,400,000 AGIEX</td><td>~69 days</td></tr>
+    <tr><td>10,000 nodes</td><td>960</td><td>~144,000,000 AGIEX</td><td>~7 days</td></tr>
+  </tbody>
+</table>
+
+<p class="footnote">Estimates assume average reward of 15 AGIEX/round. Actual emission depends on each node's uptime, capabilities, and reputation.</p>
+
+<h3>5.4.5 Scarcity Dynamics</h3>
+
+<p>The fixed supply cap combined with participation-driven emission creates natural scarcity dynamics:</p>
+
+<div class="formula">Share of total supply captured by node i:
+
+  share_i = (sum of R_i over all rounds) / S_max
+
+Early participants capture disproportionate share because:
+  1. Fewer nodes competing for emission
+  2. Reputation compounds over time (loyalty score)
+  3. Uptime bonus grows logarithmically
+  4. Supply cap creates hard ceiling</div>
+
+<h2 class="page-break">5.5 Staking Mechanics</h2>
+
+<p>After the 14-day maturation period, nodes must stake AGIEX as slashable collateral:</p>
+
+<table>
+  <thead><tr><th>Parameter</th><th style="text-align:right">Value</th></tr></thead>
+  <tbody>
+    <tr><td>Minimum Stake</td><td>100 AGIEX (100,000,000 raw units)</td></tr>
+    <tr><td>Stake Lock Period</td><td>7 days after staking</td></tr>
+    <tr><td>Unstake Cooldown</td><td>7 days after request</td></tr>
+    <tr><td>Stake Vault</td><td>PDA-controlled (seed: "stake_vault")</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Staking flow:</strong></p>
+<ol>
+  <li>Node stakes >= 100 AGIEX. Tokens transferred to PDA-controlled vault. Locked for 7 days.</li>
+  <li>After 7 days, node can request unstake. Triggers 7-day cooldown.</li>
+  <li>After cooldown, node can withdraw tokens from vault.</li>
+  <li>During unstake cooldown, node continues earning but stake remains slashable.</li>
+</ol>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 6. ON-CHAIN PROGRAM                                -->
+<!-- ═══════════════════════════════════════════════════ -->
+<h1 class="page-break"><span class="section-num">6</span> On-Chain Program</h1>
+
+<h2>6.1 Immutable Deployment</h2>
+
+<p>The Solana program governing AGIEX is deployed with the <code>--final</code> flag, which permanently removes the upgrade authority. Once deployed, the program cannot be modified, upgraded, or patched by any party. The code is the final authority.</p>
+
+<h2>6.2 PDA Mint Authority</h2>
+
+<p>The SPL token mint authority is a Program-Derived Address (PDA):</p>
+
+<div class="formula">mint_authority = PDA(program_id, ["mint_authority"])
+
+Properties:
+  - No private key exists for this address
+  - Only the program can sign with this authority
+  - Only the submit_pulse_proof instruction invokes minting
+  - The program code is immutable (--final)
+
+Therefore:  tokens can only be minted through verified proofs.</div>
+
+<h2>6.3 Instructions</h2>
+
+<p>The program exposes 11 instructions:</p>
+
+<table>
+  <thead><tr><th>#</th><th>Instruction</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><code>initialize</code></td><td>Set supply cap, initialize program state</td></tr>
+    <tr><td>2</td><td><code>register_node</code></td><td>Create node account, begin maturation period</td></tr>
+    <tr><td>3</td><td><code>stake</code></td><td>Lock AGIEX as slashable collateral</td></tr>
+    <tr><td>4</td><td><code>request_unstake</code></td><td>Begin 7-day unstake cooldown</td></tr>
+    <tr><td>5</td><td><code>withdraw_unstake</code></td><td>Claim tokens after cooldown</td></tr>
+    <tr><td>6</td><td><code>update_capabilities</code></td><td>Update capability bitmask</td></tr>
+    <tr><td>7</td><td><code>submit_pulse_proof</code></td><td>Submit proof, pass 10 security layers, mint reward</td></tr>
+    <tr><td>8</td><td><code>validate_peer</code></td><td>Attest to a peer's proof correctness</td></tr>
+    <tr><td>9</td><td><code>report_violation</code></td><td>Report provable violations, trigger slashing</td></tr>
+    <tr><td>10</td><td><code>heartbeat</code></td><td>Prove liveness, track consecutive misses</td></tr>
+    <tr><td>11</td><td><code>check_eligibility</code></td><td>Read-only: query node's reward eligibility</td></tr>
+  </tbody>
+</table>
+
+<h2>6.4 Account Layout</h2>
+
+<p>Each registered node has an on-chain <code>NodeAccount</code> PDA (seed: <code>"node" || owner_pubkey</code>):</p>
+
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th style="text-align:right">Bytes</th></tr></thead>
+  <tbody>
+    <tr><td>owner</td><td>Pubkey</td><td>32</td></tr>
+    <tr><td>token_account</td><td>Pubkey</td><td>32</td></tr>
+    <tr><td>capabilities</td><td>u16 (bitmask)</td><td>2</td></tr>
+    <tr><td>registered_at</td><td>i64</td><td>8</td></tr>
+    <tr><td>last_claim_at</td><td>i64</td><td>8</td></tr>
+    <tr><td>last_claim_round</td><td>u64</td><td>8</td></tr>
+    <tr><td>last_heartbeat</td><td>i64</td><td>8</td></tr>
+    <tr><td>total_earned</td><td>u64</td><td>8</td></tr>
+    <tr><td>total_rounds_participated</td><td>u32</td><td>4</td></tr>
+    <tr><td>reputation</td><td>u32</td><td>4</td></tr>
+    <tr><td>honesty_score</td><td>u32</td><td>4</td></tr>
+    <tr><td>loyalty_score</td><td>u32</td><td>4</td></tr>
+    <tr><td>quality_score</td><td>u32</td><td>4</td></tr>
+    <tr><td>consistency_score</td><td>u32</td><td>4</td></tr>
+    <tr><td>is_matured</td><td>bool</td><td>1</td></tr>
+    <tr><td>is_banned</td><td>bool</td><td>1</td></tr>
+    <tr><td>maturation_proofs</td><td>u32</td><td>4</td></tr>
+    <tr><td>strikes</td><td>u8</td><td>1</td></tr>
+    <tr><td>consecutive_failures</td><td>u8</td><td>1</td></tr>
+    <tr><td>consecutive_misses</td><td>u8</td><td>1</td></tr>
+    <tr><td>cooldown_until</td><td>i64</td><td>8</td></tr>
+    <tr><td>last_failure_at</td><td>i64</td><td>8</td></tr>
+    <tr><td>stake_amount</td><td>u64</td><td>8</td></tr>
+    <tr><td>stake_locked_until</td><td>i64</td><td>8</td></tr>
+    <tr><td>pending_unstake</td><td>u64</td><td>8</td></tr>
+    <tr><td>unstake_requested_at</td><td>i64</td><td>8</td></tr>
+    <tr><td>valid_proofs_submitted</td><td>u32</td><td>4</td></tr>
+    <tr><td>invalid_proofs_submitted</td><td>u32</td><td>4</td></tr>
+    <tr><td>validations_performed</td><td>u32</td><td>4</td></tr>
+    <tr><td>validations_received</td><td>u32</td><td>4</td></tr>
+    <tr><td>_reserved</td><td>[u8; 64]</td><td>64</td></tr>
+  </tbody>
+</table>
+
+<p>Total account size: ~248 bytes + 8-byte Anchor discriminator = 256 bytes.</p>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 7. SECURITY MODEL                                  -->
+<!-- ═══════════════════════════════════════════════════ -->
+<h1 class="page-break"><span class="section-num">7</span> Security Model</h1>
+
+<h2>7.1 Ten On-Chain Security Layers</h2>
+
+<p>Every <code>submit_pulse_proof</code> instruction passes through ten sequential security checks. Failure at any layer aborts the transaction:</p>
+
+<table>
+  <thead><tr><th>#</th><th>Layer</th><th>Check</th><th style="text-align:right">Consequence</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Ban check</td><td><code>is_banned == false</code></td><td>Permanent rejection</td></tr>
+    <tr><td>2</td><td>Cooldown</td><td><code>now >= cooldown_until</code></td><td>Wait for exponential cooldown</td></tr>
+    <tr><td>3</td><td>Maturation</td><td>14 days + 100 valid proofs</td><td>No rewards (proofs tracked)</td></tr>
+    <tr><td>4</td><td>Stake bond</td><td><code>stake >= 100 AGIEX</code></td><td>Must stake post-maturation</td></tr>
+    <tr><td>5</td><td>Reputation gate</td><td><code>reputation >= 500</code></td><td>Must rebuild reputation</td></tr>
+    <tr><td>6</td><td>Round uniqueness</td><td><code>round > last_claim_round</code></td><td>RoundAlreadyClaimed error</td></tr>
+    <tr><td>7</td><td>Timing</td><td><code>elapsed >= 80 seconds</code></td><td>ClaimTooFrequent error</td></tr>
+    <tr><td>8</td><td>Merkle proof</td><td>Verify 4 challenged rows</td><td>5% stake slash + rep loss</td></tr>
+    <tr><td>9</td><td>Reputation scaling</td><td>Multiply reward by rep score</td><td>Reduced reward</td></tr>
+    <tr><td>10</td><td>Supply cap</td><td><code>total_minted + reward <= 1B</code></td><td>SupplyCapReached</td></tr>
+  </tbody>
+</table>
+
+<h2>7.2 Slashing & Penalties</h2>
+
+<h3>7.2.1 Slashing Schedule</h3>
+
+<table>
+  <thead><tr><th>Violation</th><th>Stake Slashed</th><th>Reputation</th><th style="text-align:right">Strikes</th></tr></thead>
+  <tbody>
+    <tr><td>Invalid proof</td><td>5%</td><td>-200</td><td>+1</td></tr>
+    <tr><td>Collusion (fake validations)</td><td>50%</td><td>-200</td><td>+1</td></tr>
+    <tr><td>Sybil attack</td><td>100%</td><td>Zeroed</td><td>Permanent ban</td></tr>
+  </tbody>
+</table>
+
+<p><strong>5 strikes = permanent ban.</strong> Strikes are never cleared.</p>
+
+<h3>7.2.2 Exponential Cooldown</h3>
+
+<p>After each consecutive failure, the cooldown period doubles:</p>
+
+<div class="formula">cooldown(n) = min(T_max,  T_base * 2^(n-1))
+
+T_base = 300 seconds (5 minutes)
+T_max  = 604,800 seconds (7 days)
+
+  n=1:  5 min      n=4:  40 min     n=7:  5.3 hours
+  n=2:  10 min     n=5:  80 min     n=8:  10.7 hours
+  n=3:  20 min     n=6:  2.7 hours  n=11: 3.6 days (capped at 7d)</div>
+
+<h2>7.3 P2P Security</h2>
+
+<table>
+  <thead><tr><th>Mechanism</th><th>Parameters</th></tr></thead>
+  <tbody>
+    <tr><td>Message signing</td><td>Ed25519 on all GossipSub messages</td></tr>
+    <tr><td>Timestamp freshness</td><td>Reject messages older than 5 minutes</td></tr>
+    <tr><td>Rate limiting</td><td>60 messages/min/peer, 50 proofs/hour/peer</td></tr>
+    <tr><td>Challenge-response</td><td>32-byte nonce every 300s, 10s timeout</td></tr>
+    <tr><td>Bot detection</td><td>Coefficient of variation &lt; 5% over 20 samples = ban</td></tr>
+    <tr><td>Timing anomaly (fast)</td><td>&lt; 50ms proof computation: -30 peer score</td></tr>
+    <tr><td>Timing anomaly (slow)</td><td>&gt; 30s proof computation: -5 peer score</td></tr>
+    <tr><td>Auto-blocklist</td><td>Peer score &lt; -100</td></tr>
+  </tbody>
+</table>
+
+<h2>7.4 Sybil Resistance</h2>
+
+<p>The system employs layered sybil resistance:</p>
+
+<ol>
+  <li><strong>Economic barrier:</strong> 100 AGIEX minimum stake per node creates a linear cost for sybil attacks.</li>
+  <li><strong>Temporal barrier:</strong> 14-day maturation + 100 valid proofs before earning. A sybil operator must maintain each fake node for two weeks.</li>
+  <li><strong>Computational barrier:</strong> Each node must independently compute 256x256 matmul every 90 seconds. The cost of running N sybil nodes scales linearly with N.</li>
+  <li><strong>Detection:</strong> 3+ nodes with identical Merkle roots in the same round are flagged. Penalty: -100 peer score per detected sybil node.</li>
+  <li><strong>Cross-validation:</strong> Validators independently verify proofs. Collusion between sybil nodes is detected when validators disagree.</li>
+</ol>
+
+<div class="formula">Cost of sybil attack with K nodes:
+
+  C_sybil(K) = K * stake_min + K * compute_cost * T_maturation
+             = K * 100 AGIEX + K * (electricity + hardware) * 14 days
+
+Reward for K sybil nodes (assuming detection at rate d):
+
+  R_sybil(K) = K * R_avg * (1 - d) - K * slash_rate * stake
+             where d increases rapidly with K (detection is O(K^2) in pair checks)</div>
+
+<p>For any non-trivial number of sybil nodes, the expected cost exceeds the expected reward, making sybil attacks economically irrational.</p>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 8. LOCAL INFERENCE                                  -->
+<!-- ═══════════════════════════════════════════════════ -->
+<h1 class="page-break"><span class="section-num">8</span> Local Inference & Model Serving</h1>
+
+<h2>8.1 Hardware Auto-Detection</h2>
+
+<p>At startup, the node runs a hardware detection script that probes:</p>
+
+<table>
+  <thead><tr><th>Component</th><th>Detection Method</th></tr></thead>
+  <tbody>
+    <tr><td>GPU (NVIDIA)</td><td><code>nvidia-smi --query-gpu=memory.total</code></td></tr>
+    <tr><td>GPU (AMD)</td><td><code>/sys/class/drm/*/device/mem_info_vram_total</code></td></tr>
+    <tr><td>GPU (Apple)</td><td><code>system_profiler SPDisplaysDataType</code></td></tr>
+    <tr><td>CPU cores</td><td><code>nproc</code></td></tr>
+    <tr><td>RAM</td><td><code>/proc/meminfo</code> or <code>sysctl hw.memsize</code></td></tr>
+    <tr><td>Disk</td><td><code>df -BM /</code></td></tr>
+    <tr><td>Public IP</td><td><code>curl -s ifconfig.me</code></td></tr>
+  </tbody>
+</table>
+
+<p>Results are written to <code>hw-profile.json</code> and used to auto-enable capabilities and select the recommended model.</p>
+
+<h2>8.2 Model Selection & GGUF Loading</h2>
+
+<p>The recommended model is selected based on available VRAM:</p>
+
+<table>
+  <thead><tr><th>VRAM (GB)</th><th>Recommended Model</th><th style="text-align:right">Parameters</th></tr></thead>
+  <tbody>
+    <tr><td>80+</td><td>qwen2.5-coder-32b</td><td>32B</td></tr>
+    <tr><td>48+</td><td>gemma-3-27b</td><td>27B</td></tr>
+    <tr><td>24+</td><td>gpt-oss-20b</td><td>20B</td></tr>
+    <tr><td>16+</td><td>gemma-3-12b</td><td>12B</td></tr>
+    <tr><td>12+</td><td>glm-4-9b</td><td>9B</td></tr>
+    <tr><td>8+</td><td>gemma-3-4b</td><td>4B</td></tr>
+    <tr><td>6+</td><td>gemma-3-4b</td><td>4B</td></tr>
+    <tr><td>4+</td><td>gemma-3-1b</td><td>1B</td></tr>
+    <tr><td>&lt;4</td><td>None (CPU-only node)</td><td>-</td></tr>
+  </tbody>
+</table>
+
+<p>Models are loaded from <code>./models/{model_name}.gguf</code> using <code>node-llama-cpp</code> with a context size of 4096 tokens.</p>
+
+<h2>8.3 OpenAI-Compatible API</h2>
+
+<p>Each node serves an HTTP API on port 8080:</p>
+
+<table>
+  <thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>/v1/models</code></td><td>GET</td><td>List loaded models</td></tr>
+    <tr><td><code>/v1/chat/completions</code></td><td>POST</td><td>Chat inference (streaming + non-streaming)</td></tr>
+    <tr><td><code>/v1/embeddings</code></td><td>POST</td><td>Text embeddings (384-dim, all-MiniLM-L6-v2)</td></tr>
+    <tr><td><code>/health</code></td><td>GET</td><td>Health check with model status</td></tr>
+    <tr><td><code>/status</code></td><td>GET</td><td>Full node status</td></tr>
+    <tr><td><code>/leaderboard/{domain}</code></td><td>GET</td><td>Top-10 experiment results for domain</td></tr>
+    <tr><td><code>/governance</code></td><td>GET</td><td>Governance status and active proposals</td></tr>
+  </tbody>
+</table>
+
+<p>Streaming responses use Server-Sent Events (SSE). The API supports <code>max_tokens</code>, <code>temperature</code>, and full message history. Response format follows the OpenAI ChatCompletion specification with usage tracking.</p>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 9. AUTONOMOUS RESEARCH                             -->
+<!-- ═══════════════════════════════════════════════════ -->
+<h1 class="page-break"><span class="section-num">9</span> Autonomous Research Pipeline</h1>
+
+<h2>9.1 Research Projects</h2>
+
+<p>The Agent Brain runs a 10-second decision loop that cycles through eight parallel research projects:</p>
+
+<table>
+  <thead><tr><th>Project</th><th>Primary Metric</th><th>Direction</th><th>Domain</th></tr></thead>
+  <tbody>
+    <tr><td>gpt2-tinystories</td><td>Validation loss</td><td>Lower is better</td><td>Language modeling</td></tr>
+    <tr><td>astrophysics</td><td>Validation loss</td><td>Lower is better</td><td>Scientific language modeling</td></tr>
+    <tr><td>search-engine</td><td>NDCG@10</td><td>Higher is better</td><td>Information retrieval</td></tr>
+    <tr><td>financial-analysis</td><td>Sharpe ratio</td><td>Higher is better</td><td>Quantitative finance</td></tr>
+    <tr><td>agentic-coding</td><td>Composite score</td><td>Higher is better</td><td>Code generation</td></tr>
+    <tr><td>skills-and-tools</td><td>Score</td><td>Higher is better</td><td>Tool use</td></tr>
+    <tr><td>academic-papers</td><td>Score</td><td>Higher is better</td><td>Scientific writing</td></tr>
+    <tr><td>p2p-network</td><td>Best result</td><td>Higher is better</td><td>Distributed systems</td></tr>
+  </tbody>
+</table>
+
+<p>Each research cycle follows a five-stage pipeline: Hypothesis Generation, Experiment Execution, Paper Writing, Peer Critique, and Discovery Broadcast.</p>
+
+<h2>9.2 Mutation Strategies</h2>
+
+<p>Hypotheses are generated by applying mutations to the best-known configuration. The system implements 23 mutation strategies:</p>
+
+<h3>9.2.1 ML Architecture Mutations</h3>
+
+<table>
+  <thead><tr><th>Strategy</th><th>Range</th></tr></thead>
+  <tbody>
+    <tr><td>learning_rate</td><td>0.5x to 3.5x of current value</td></tr>
+    <tr><td>context_length</td><td>{64, 128, 256, 512}</td></tr>
+    <tr><td>batch_size</td><td>{4, 8, 16, 32, 64}</td></tr>
+    <tr><td>model_width (d_model)</td><td>{64, 128, 256, 384, 512, 768, 1024}</td></tr>
+    <tr><td>depth (n_layers)</td><td>{2, 4, 6, 8, 12, 16}</td></tr>
+    <tr><td>normalization</td><td>{layernorm, rmsnorm}</td></tr>
+    <tr><td>position_encoding</td><td>{learned, rotary, sinusoidal}</td></tr>
+    <tr><td>activation</td><td>{gelu, silu, swiglu, relu}</td></tr>
+    <tr><td>weight_decay</td><td>{0.0, 0.001, 0.01, 0.05, 0.1}</td></tr>
+    <tr><td>init_scheme</td><td>{default, kaiming, xavier}</td></tr>
+    <tr><td>gradient_clip</td><td>{0.5, 1.0, 2.0, 5.0}</td></tr>
+    <tr><td>tied_embeddings</td><td>toggle</td></tr>
+    <tr><td>extended_training</td><td>duration * (1 + random)</td></tr>
+  </tbody>
+</table>
+
+<h3>9.2.2 Agentic Coding Mutations</h3>
+
+<table>
+  <thead><tr><th>Strategy</th><th>Range</th></tr></thead>
+  <tbody>
+    <tr><td>lora_rank</td><td>{16, 32, 64, 128, 256}</td></tr>
+    <tr><td>lora_alpha</td><td>{rank, rank*2, rank*4}</td></tr>
+    <tr><td>lora_dropout</td><td>{0.0, 0.01, 0.05, 0.1}</td></tr>
+    <tr><td>lora_targets</td><td>3 preset module combinations</td></tr>
+    <tr><td>coding_data_mix</td><td>4 preset dataset combinations</td></tr>
+    <tr><td>finetuning_method</td><td>{lora, qlora, dora}</td></tr>
+    <tr><td>epochs</td><td>{1, 2, 3, 5, 8}</td></tr>
+    <tr><td>gradient_accumulation</td><td>{1, 2, 4, 8, 16}</td></tr>
+    <tr><td>max_seq_length</td><td>{2048, 4096, 8192}</td></tr>
+    <tr><td>generation_temperature</td><td>{0.0, 0.1, 0.2, 0.4, 0.6}</td></tr>
+  </tbody>
+</table>
+
+<h2>9.3 CRDT Leaderboards</h2>
+
+<p>Experiment results are tracked in five Yjs-based Conflict-Free Replicated Data Types (CRDTs), one per domain:</p>
+
+<table>
+  <thead><tr><th>Domain</th><th>Metric Field</th><th>Direction</th></tr></thead>
+  <tbody>
+    <tr><td>research</td><td><code>valLoss</code></td><td>Ascending (lower wins)</td></tr>
+    <tr><td>search</td><td><code>ndcg10</code></td><td>Descending (higher wins)</td></tr>
+    <tr><td>finance</td><td><code>sharpeRatio</code></td><td>Descending (higher wins)</td></tr>
+    <tr><td>coding</td><td><code>compositeScore</code></td><td>Descending (higher wins)</td></tr>
+    <tr><td>causes</td><td><code>score</code></td><td>Descending (higher wins)</td></tr>
+  </tbody>
+</table>
+
+<p>CRDTs converge automatically across all nodes without a central server. Each entry stores: peer ID, metric value, hypothesis, mutation strategy, configuration, GPU name, timestamp, and run number.</p>
+
+<h2>9.4 Agentic Coding</h2>
+
+<p>The agentic coding project fine-tunes Qwen 3.5 Coder 7B using LoRA adaptation:</p>
+
+<h3>9.4.1 Baseline Configuration</h3>
+
+<dl class="def-grid">
+  <dt>Base model</dt><dd>Qwen 3.5 Coder 7B (q4_k_m quantization)</dd>
+  <dt>Architecture</dt><dd>32 layers, 32 heads, d_model=4096, d_ff=11008, SiLU activation, RMSNorm, RoPE</dd>
+  <dt>LoRA rank</dt><dd>64</dd>
+  <dt>LoRA alpha</dt><dd>128</dd>
+  <dt>LoRA dropout</dt><dd>0.05</dd>
+  <dt>Target modules</dt><dd>q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj</dd>
+  <dt>Learning rate</dt><dd>2e-4 with cosine schedule</dd>
+  <dt>Training</dt><dd>3 epochs, batch size 4, max 5000 steps, FP16</dd>
+</dl>
+
+<h3>9.4.2 Composite Score Formula</h3>
+
+<div class="formula">S_composite = w_code * S_coding_avg + w_ml * S_ml_avg
+
+where:
+  w_code = 0.6     (coding benchmark weight)
+  w_ml   = 0.4     (ML script benchmark weight)
+
+  S_coding_avg = (S_humaneval + S_mbpp) / 2
+
+  S_ml_avg = (S_mlbench + S_ds1000 + S_classeval) / 3
+
+Baseline scores:
+  S_humaneval  = 0.72    S_mlbench  = 0.45
+  S_mbpp       = 0.68    S_ds1000   = 0.38
+  S_classeval  = 0.52
+
+  S_composite_baseline = 0.6 * (0.72 + 0.68)/2 + 0.4 * (0.45 + 0.38 + 0.52)/3
+                       = 0.6 * 0.70 + 0.4 * 0.45
+                       = 0.42 + 0.18
+                       = 0.60</div>
+
+<h3>9.4.3 Mutation Impact Factors</h3>
+
+<div class="formula">LoRA ratio factor:     f_ratio = min(1, (alpha / rank) / 4) * 0.10
+Data mix factor:       f_data  = min(1, |datasets| / 4) * 0.08
+Method bonus:          f_method = { dora: +0.05, qlora: +0.02, lora: 0 }
+Epoch factor:          f_epoch = min(0.06, ln(1 + epochs) * 0.02)
+
+Mutated score = S_baseline * (1 + f_ratio + f_data + f_method + f_epoch + noise)</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 10. GOVERNANCE                                     -->
+<!-- ═══════════════════════════════════════════════════ -->
+<h1 class="page-break"><span class="section-num">10</span> Governance</h1>
+
+<h2>10.1 Council Structure</h2>
+
+<p>Research direction is governed by a seven-seat multidisciplinary council. Each seat represents a distinct domain of expertise, ensuring no single perspective dominates decision-making:</p>
+
+<table>
+  <thead><tr><th>#</th><th>Seat</th><th>Evaluates</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>AI/ML Researcher</td><td>Technical feasibility, architecture validity, benchmark rigor</td></tr>
+    <tr><td>2</td><td>Systems Engineer</td><td>Infrastructure requirements, scalability, resource costs</td></tr>
+    <tr><td>3</td><td>Ethicist / Philosopher</td><td>Alignment, safety, societal impact, dual-use potential</td></tr>
+    <tr><td>4</td><td>Legal Counsel</td><td>Regulatory compliance, data licensing, intellectual property</td></tr>
+    <tr><td>5</td><td>Domain Scientist</td><td>Scientific rigor, methodology, reproducibility</td></tr>
+    <tr><td>6</td><td>Community Advocate</td><td>User impact, accessibility, practical value</td></tr>
+    <tr><td>7</td><td>Security Auditor</td><td>Attack surfaces, game theory, adversarial scenarios</td></tr>
+  </tbody>
+</table>
+
+<p>Council members serve 90-day terms (7,776,000 seconds). Council approval requires 4 of 7 members.</p>
+
+<h2>10.2 Proposal Lifecycle</h2>
+
+<div class="formula">DRAFT  -->  REVIEW (3 days)  -->  VOTING (7 days)  -->  APPROVED / REJECTED  -->  ACTIVE  -->  SUNSET</div>
+
+<p><strong>Proposal requirements:</strong> Proposer must have reputation >= 2,000. Proposals must include: objectives, benchmarks, data requirements, ethics statement, and success criteria.</p>
+
+<h2>10.3 Voting Mechanics</h2>
+
+<div class="formula">Vote weight = sqrt(reputation)
+
+Rationale: Square root scaling reduces plutocratic influence.
+  Node with rep 10000: weight = 100
+  Node with rep  2500: weight =  50
+  Node with rep   500: weight ~  22
+
+Approval threshold: 66% of weighted votes
+Quorum:             10% of active nodes must participate
+Voting period:      7 days (604,800,000 ms)
+Min rep to vote:    500 / 10000</div>
+
+<p>This design ensures that high-reputation nodes have influence proportional to the square root of their reputation, rather than linearly. A node with 4x the reputation of another gets only 2x the voting power.</p>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 11. CONCLUSION                                     -->
+<!-- ═══════════════════════════════════════════════════ -->
+<h1 class="page-break"><span class="section-num">11</span> Conclusion</h1>
+
+<p>AGI Expert represents a fundamentally different approach to AI research infrastructure. Rather than centralizing compute, data, and governance in a single institution, the network distributes all three across a permissionless mesh of autonomous agents.</p>
+
+<p>The design provides the following guarantees:</p>
+
+<ol>
+  <li><strong>Trustless token economics.</strong> The AGIEX token has no pre-mine, no team allocation, and no admin keys. Every token is minted on-chain in response to a verified proof. The mint authority is a PDA, and the program is deployed immutably.</li>
+  <li><strong>Verifiable computation.</strong> The pulse protocol combines matrix computation challenges, Merkle commitment schemes, VRF leader election, and multi-party cross-validation to ensure that only genuine compute earns rewards.</li>
+  <li><strong>Layered security.</strong> Ten on-chain security layers, exponential cooldowns, slashing, and permanent bans make attacks economically irrational. P2P security adds rate limiting, challenge-response liveness, anomaly detection, and automatic blocklisting.</li>
+  <li><strong>Adaptive participation.</strong> Hardware auto-detection and the nine-capability system allow any device from a browser to an H100 server to participate meaningfully and earn rewards proportional to its contribution.</li>
+  <li><strong>Autonomous research.</strong> Eight parallel research projects run continuously across every node, with evolutionary mutation strategies, CRDT-based result sharing, and global leaderboards that converge without a central server.</li>
+  <li><strong>Diversified governance.</strong> A seven-seat council spanning AI/ML, engineering, ethics, law, science, community advocacy, and security ensures that research direction reflects broad expertise rather than narrow interests.</li>
+</ol>
+
+<p>The network is live on testnet. Anyone can join with a single command:</p>
+
+<div class="formula">git clone git@github.com:AGI-expert/AGIeX.git && cd AGIeX && ./start.sh</div>
+
+<p style="margin-top: 24pt; text-align: center; color: var(--tertiary); font-size: 9pt;">
+  AGI Expert Network &mdash; AGIEX Token &mdash; Whitepaper v1.0 &mdash; March 2026<br>
+  https://agi.expert
+</p>
+
+</body>
+</html>

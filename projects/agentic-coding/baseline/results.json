@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "baseline": true,
+  "model": "qwen3.5-coder-7b",
+  "benchmarks": {
+    "humaneval_plus": 0.72,
+    "mbpp_plus": 0.68,
+    "ml_bench": 0.45,
+    "ds1000": 0.38,
+    "classeval": 0.52
+  },
+  "composite_score": 0.57,
+  "notes": "Baseline Qwen 3.5 Coder 7B without fine-tuning. Composite = 0.6 × avg(humaneval, mbpp) + 0.4 × avg(ml_bench, ds1000, classeval)"
+}

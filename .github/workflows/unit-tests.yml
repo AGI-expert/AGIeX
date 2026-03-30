@@ -1,0 +1,50 @@
+name: Tests
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  rust:
+    name: Solana Program (Rust)
+    runs-on: ubuntu-latest
+    container:
+      image: rust:1-slim-bookworm
+
+    defaults:
+      run:
+        working-directory: program
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          apt-get update && apt-get install -y \
+            pkg-config libssl-dev libudev-dev build-essential \
+            llvm libclang-dev protobuf-compiler
+
+      - name: Run unit tests
+        run: cargo test --verbose
+
+  javascript:
+    name: Node Runtime (JavaScript)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test

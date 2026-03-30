@@ -1,0 +1,68 @@
+version: 1
+# General Intelligence — Train toward AGI-level reasoning across many benchmarks
+model:
+  base: qwen3.5-7b
+  quantization: q4_k_m
+  contextLength: 8192
+  vocabSize: 151936
+architecture:
+  nLayers: 32
+  nHeads: 32
+  dModel: 4096
+  dFF: 11008
+  activation: silu
+  normalization: rmsnorm
+  positionEncoding: rotary
+  tieEmbeddings: false
+  residualScale: 1.0
+  dropoutRate: 0.0
+finetuning:
+  method: lora
+  loraRank: 64
+  loraAlpha: 128
+  loraDropout: 0.05
+  targetModules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  learningRate: 0.00015
+  weightDecay: 0.01
+  warmupRatio: 0.05
+  schedulerType: cosine
+  gradientClipNorm: 1.0
+  gradientAccumulation: 8
+training:
+  batchSize: 4
+  epochs: 3
+  maxSteps: 8000
+  maxDurationSec: 3600
+  evalInterval: 500
+  evalSteps: 100
+  fp16: true
+data:
+  dataset: general-intelligence-mix
+  splits:
+    train: [arc-reasoning, gsm8k, math-train, code-alpaca, sharegpt-filtered, openbookqa, sciq]
+    eval: [arc-agi2, gpqa-diamond, math500, humaneval, mmlu-pro, bbh, drop, hellaswag]
+  tokenizer: qwen
+  maxSeqLength: 4096
+  packSequences: true
+reasoning:
+  chainOfThought: true
+  selfConsistencyK: 5
+  treeOfThought: false
+  verifierGuided: false
+benchmarks:
+  primary: arc_agi2
+  secondary: [gpqa, math500, humaneval, mmlu_pro, bbh, drop, hellaswag]
+  weights:
+    arc_agi2: 0.25
+    gpqa: 0.15
+    math500: 0.15
+    humaneval: 0.10
+    mmlu_pro: 0.10
+    bbh: 0.10
+    drop: 0.08
+    hellaswag: 0.07
+generation:
+  temperature: 0.3
+  topP: 0.95
+  maxNewTokens: 2048
+  repetitionPenalty: 1.05

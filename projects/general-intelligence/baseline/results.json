@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "baseline": true,
+  "model": "qwen3.5-7b",
+  "benchmarks": {
+    "arc_agi2": 0.12,
+    "gpqa": 0.28,
+    "math500": 0.34,
+    "humaneval": 0.42,
+    "mmlu_pro": 0.38,
+    "bbh": 0.35,
+    "drop": 0.40,
+    "hellaswag": 0.62
+  },
+  "composite_score": 0.2989,
+  "notes": "Baseline Qwen 3.5 7B without fine-tuning. Composite = weighted sum: 0.25×arc_agi2 + 0.15×gpqa + 0.15×math500 + 0.10×humaneval + 0.10×mmlu_pro + 0.10×bbh + 0.08×drop + 0.07×hellaswag"
+}

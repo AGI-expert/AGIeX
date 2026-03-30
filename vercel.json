@@ -1,0 +1,14 @@
+{
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/install", "destination": "/public/install.sh" }
+  ],
+  "headers": [
+    {
+      "source": "/install",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" }
+      ]
+    }
+  ]
+}
