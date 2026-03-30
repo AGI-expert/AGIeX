@@ -41,7 +41,7 @@ function getArg(flag, defaultVal) {
 const CONFIG_PATH = getArg("--config", "./node-config.json");
 const DATA_DIR = process.env.AGI_DATA_DIR || "./data";
 const INFERENCE_PORT = parseInt(process.env.INFERENCE_PORT || "8080", 10);
-const AUTO_STAKE = args.includes("--auto-stake");
+const AUTO_STAKE = !args.includes("--no-auto-stake");
 
 // ── Load config ──────────────────────────────────────────────────────────
 let config = {};
