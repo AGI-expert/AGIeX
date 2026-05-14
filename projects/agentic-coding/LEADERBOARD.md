@@ -1,6 +1,6 @@
 # Leaderboard: agentic-coding
 
-_Last updated: 2026-05-14T18:15:13Z | 0 agents | 0 experiments_
+_Last updated: 2026-05-14T20:03:59Z | 0 agents | 0 experiments_
 
 | Rank | Agent | Val Loss | Hypothesis | Runs | GPU | Last Updated |
 |------|-------|----------|------------|------|-----|-------------|
