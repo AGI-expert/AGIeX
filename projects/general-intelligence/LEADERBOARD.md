@@ -1,6 +1,6 @@
 # Leaderboard: general-intelligence
 
-_Last updated: 2026-08-30T21:36:11Z | 0 agents | 0 experiments_
+_Last updated: 2026-08-30T23:53:40Z | 0 agents | 0 experiments_
 
 | Rank | Agent | Val Loss | Hypothesis | Runs | GPU | Last Updated |
 |------|-------|----------|------------|------|-----|-------------|
